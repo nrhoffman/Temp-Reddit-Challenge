@@ -8,6 +8,7 @@ on:
 
 jobs:
   validate-commits:
+    name: validate-commits
     runs-on: ubuntu-latest
 
     steps:
