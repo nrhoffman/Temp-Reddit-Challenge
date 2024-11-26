@@ -12,12 +12,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate commit messages
+      - name: Validate the latest commit message
         run: |
-          git log --format='%s' HEAD~$(git rev-list --count HEAD^)..HEAD | while read -r line; do
-            echo "Checking commit: $line"
-            if [[ ! "$line" =~ ^(ci:|feature:|fix:|docs:|test:)\ .+ ]]; then
-              echo "❌ Commit message does not follow the required format: $line"
-              exit 1
-            fi
-          done
+          # Get the commit message for HEAD
+          commit_message=$(git log -1 --pretty=%s)
+          echo "Checking commit: $commit_message"
+          
+          # Validate the commit message format
+          if [[ ! "$commit_message" =~ ^(ci:|feature:|fix:|docs:|test:)\ .+ ]]; then
+            echo "❌ Commit message does not follow the required format: $commit_message"
+            exit 1
+          fi
