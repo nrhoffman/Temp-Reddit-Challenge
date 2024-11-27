@@ -1,0 +1,1 @@
+This folder contains assets like images, icons, and gifs used across the application.

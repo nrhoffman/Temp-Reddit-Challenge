@@ -1,0 +1,1 @@
+Contains types, or rather structures, to be used through application (eg UserData)
