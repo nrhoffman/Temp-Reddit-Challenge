@@ -1,0 +1,18 @@
+#!/bin/bash
+
+protected_branch="main"
+allowed_child="dev"
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Find the parent branch by comparing the current branch's tip to other branches
+parent_branch=$(git for-each-ref --format='%(refname:short)' refs/heads/ | grep -v "^$branch$" | while read other_branch; do
+    if git merge-base --is-ancestor "$other_branch" "$branch"; then
+        echo "$other_branch"
+    fi
+done | head -n 1)
+
+# Ensure branches directly off 'main' are named 'dev'
+if [[ $parent_branch == "$protected_branch" && $branch != "$allowed_child" ]]; then
+    echo "Error: Branches directly off 'main' must be named 'dev'."
+    exit 1
+fi

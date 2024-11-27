@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# An example hook script to verify what is about to be pushed. Called by "git
+# push" after it has checked the remote status, but before anything has been
+# pushed. If this script exits with a non-zero status, nothing will be pushed.
+
+# This script checks that commit messages follow a specific format before allowing the push.
+# Commit messages must start with "ci:", "feature:", "fix:", "docs:", "test:"
+
+remote="$1"
+url="$2"
+
+# Get the latest commit message
+commit_message=$(git log -1 --pretty=%s)
+
+# Define the valid commit message prefixes
+valid_prefixes="^(ci:|feature:|fix:|docs:|test:)\ .+"
+
+zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
+
+while read local_ref local_oid remote_ref remote_oid
+do
+    if test "$local_oid" = "$zero"
+    then
+        # Handle delete
+        :
+    else
+        if test "$remote_oid" = "$zero"
+        then
+            # New branch, examine all commits
+            range="$local_oid"
+        else
+            # Update to existing branch, examine new commits
+            range="$remote_oid..$local_oid"
+        fi
+
+        # Check the commit message format
+        if [[ ! "$commit_message" =~ $valid_prefixes ]]
+        then
+            echo >&2 "❌ Commit message does not follow the required format: $commit_message"
+            echo >&2 "Valid formats: ci:, feature:, fix:, docs:, and test:"
+			echo >&2 "Example: fix: fixed bug in main.py"
+            exit 1  # Reject push if commit message is invalid
+        fi
+    fi
+done
+
+exit 0
