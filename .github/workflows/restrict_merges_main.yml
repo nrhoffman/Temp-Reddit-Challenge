@@ -1,0 +1,21 @@
+name: restrict_merges_main
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-merge-source:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check if source branch is dev
+        run: |
+          if [[ "$GITHUB_HEAD_REF" != "dev" ]]; then
+            echo "Error: Merges into 'main' must come from 'dev' branch."
+            exit 1
+          fi
