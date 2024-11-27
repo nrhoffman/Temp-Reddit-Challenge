@@ -1,0 +1,14 @@
+#!/bin/bash
+
+protected_branch="main"
+allowed_child="dev"
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Find the immediate parent branch of the current branch
+parent_branch=$(git reflog show --pretty="%gs" | grep -oE "branch: Created from ([^ ]+)" | head -n 1 | awk '{print $NF}')
+
+# Ensure branches directly off 'main' are named 'dev'
+if [[ $parent_branch == "$protected_branch" && $branch != "$allowed_child" ]]; then
+    echo "Error: Branches directly off 'main' must be named 'dev'."
+    exit 1
+fi
