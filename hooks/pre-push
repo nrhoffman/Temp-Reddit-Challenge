@@ -14,7 +14,7 @@ url="$2"
 commit_message=$(git log -1 --pretty=%s)
 
 # Define the valid commit message prefixes
-valid_prefixes="^(ci:|feature:|fix:|docs:|test:)\ .+"
+valid_prefixes="^(ci:|feature:|fix:|docs:|test:|chore:)\ .+"
 
 zero=$(git hash-object --stdin </dev/null | tr '[0-9a-f]' '0')
 
@@ -38,7 +38,7 @@ do
         if [[ ! "$commit_message" =~ $valid_prefixes ]]
         then
             echo >&2 "❌ Commit message does not follow the required format: $commit_message"
-            echo >&2 "Valid formats: ci:, feature:, fix:, docs:, and test:"
+            echo >&2 "Valid formats: ci:, feature:, fix:, docs:, chore:, and test:"
 			echo >&2 "Example: fix: fixed bug in main.py"
             exit 1  # Reject push if commit message is invalid
         fi
