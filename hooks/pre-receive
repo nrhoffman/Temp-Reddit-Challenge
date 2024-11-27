@@ -1,0 +1,13 @@
+#!/bin/bash
+protected_branch="main"
+allowed_child="dev"
+
+while read oldrev newrev refname; do
+    branch=$(git rev-parse --symbolic --abbrev-ref "$refname")
+    parent=$(git show-branch --merge-base $branch)
+
+    if [[ $branch != "$allowed_child" && $parent == $protected_branch ]]; then
+        echo "Error: Branches off 'main' must be named 'dev'."
+        exit 1
+    fi
+done
